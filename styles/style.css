@@ -1,0 +1,48 @@
+@font-face {
+    font-family: "BebasNeue";
+    src: url(../Fonts/BebasNeue-Regular.ttf);
+}
+
+@font-face {
+    font-family: "Roboto";
+    src: url(../Fonts/RobotoCondensed-VariableFont_wght.ttf);
+}
+
+main {
+  margin-top: 72px; /* ajustalo según altura del nav */
+}
+
+.text-bebas{
+    font-family: "BebasNeue";
+}
+
+.text-bebas2{
+    font-family: "BebasNeue";
+    font-size: 7rem;
+}
+
+.text-roboto{
+    font-family: "Roboto";
+}
+
+.bg-amarillo{
+    background-color: #E7A021;
+}
+
+.text-amarillo{
+    color: #E7A021;
+}
+
+#banner{
+    min-height: 100vh;
+}
+
+.linea{
+    border: solid 1px rgb(48, 48, 48);
+}
+
+@media (max-width: 768px) {
+  .text-bebas2 {
+    font-size: 5rem;
+  }
+}
