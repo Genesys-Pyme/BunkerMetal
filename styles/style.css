@@ -34,7 +34,7 @@ main {
 }
 
 #banner{
-    min-height: 100vh;
+    min-height: 90vh;
 }
 
 .linea{
@@ -45,4 +45,9 @@ main {
   .text-bebas2 {
     font-size: 5rem;
   }
+}
+
+.altura {
+    
+    min-height: 650px;
 }
