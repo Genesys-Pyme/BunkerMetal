@@ -65,7 +65,19 @@ main {
 .strip-item     { font-family: 'Barlow Condensed', sans-serif; font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase; color: black; display: flex; align-items: center; gap: 0.8rem; }
 .strip-dot      { width: 5px; height: 5px; border-radius: 50%; background: black; }
 
-@keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.services-strip {
+  background: var(--spark);
+  padding: 1.2rem 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.strip-track {
+  display: flex;
+  gap: 3rem;
+  white-space: nowrap;
+  width: max-content;
+}
 
 /* ── GRILLA DE SERVICIOS ── */
 .section        { padding: 7rem 5rem; }
@@ -79,6 +91,12 @@ main {
 .service-num    { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; color: rgba(232,160,32,0.12); line-height: 1; margin-bottom: 1.2rem; }
 .service-name   { font-family: 'Barlow Condensed', sans-serif; font-size: 1.2rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--white); margin-bottom: 0.8rem; }
 .service-desc   { font-size: 0.9rem; font-weight: 300; line-height: 1.65; color: var(--ash); }
+
+@media (max-width: 768px) {
+  .strip-track {
+    animation-duration: 5s;
+  }
+}
 
 #servicios{
     min-height: 100vh;
