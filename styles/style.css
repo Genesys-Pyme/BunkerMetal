@@ -21,6 +21,11 @@ main {
     font-size: 7rem;
 }
 
+.text-bebas3{
+    font-family: "BebasNeue";
+    font-size: 5rem;
+}
+
 .text-roboto{
     font-family: "Roboto";
 }
