@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bunker Metal - Hero 2</title>
+<style>
+  :root {
+    --gold:  #E7A021;
+    --dark:  #111111;
+    --mid:   #1a1a1a;
+  }
+
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: black;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  /* ── CANVAS WRAPPER ── */
+  .stage {
+    position: relative;
+    width: 480px;
+    height: 480px;
+  }
+
+  /* ═══════════════════════════
+     BACKGROUND RADIAL GLOW
+  ═══════════════════════════ */
+  .bg-glow {
+    position: absolute;
+    inset: -60px;
+    background: radial-gradient(circle at 50% 50%,
+      rgba(231,160,33,0.10) 0%,
+      rgba(231,160,33,0.03) 40%,
+      transparent 70%);
+    animation: glowBreath 4s ease-in-out infinite;
+  }
+  @keyframes glowBreath {
+    0%,100% { opacity: 0.7; transform: scale(1);    }
+    50%      { opacity: 1;   transform: scale(1.08); }
+  }
+
+  /* ═══════════════════════════
+     GRID / CROSSHAIR BG
+  ═══════════════════════════ */
+  .grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(231,160,33,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(231,160,33,0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: radial-gradient(circle at 50% 50%, black 30%, transparent 72%);
+    -webkit-mask-image: radial-gradient(circle at 50% 50%, black 30%, transparent 72%);
+  }
+
+  /* ═══════════════════════════
+     OUTER DASHED RING
+  ═══════════════════════════ */
+  .ring-outer {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 420px; height: 420px;
+    margin: -210px 0 0 -210px;
+    border-radius: 50%;
+    border: 1px dashed rgba(231,160,33,0.18);
+    animation: spinSlow 40s linear infinite;
+  }
+
+  /* tick marks on outer ring */
+  .ring-outer::before {
+    content: '';
+    position: absolute;
+    top: -3px; left: 50%;
+    width: 2px; height: 10px;
+    background: var(--gold);
+    margin-left: -1px;
+    box-shadow:
+      0 410px 0 var(--gold),
+      205px -205px 0 var(--gold),
+      -205px -205px 0 var(--gold);
+    opacity: 0.5;
+  }
+
+  @keyframes spinSlow  { to { transform: rotate(360deg);  } }
+  @keyframes spinSlowR { to { transform: rotate(-360deg); } }
+
+  /* ═══════════════════════════
+     MIDDLE RING
+  ═══════════════════════════ */
+  .ring-mid {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 320px; height: 320px;
+    margin: -160px 0 0 -160px;
+    border-radius: 50%;
+    border: 1px solid rgba(231,160,33,0.12);
+    animation: spinSlow 25s linear infinite reverse;
+  }
+
+  /* ═══════════════════════════
+     INNER SOLID RING
+  ═══════════════════════════ */
+  .ring-inner {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 200px; height: 200px;
+    margin: -100px 0 0 -100px;
+    border-radius: 50%;
+    border: 2px solid rgba(231,160,33,0.25);
+    box-shadow: 0 0 20px rgba(231,160,33,0.08), inset 0 0 20px rgba(231,160,33,0.04);
+  }
+
+  /* ═══════════════════════════
+     SCAN LINE
+  ═══════════════════════════ */
+  .scan-wrap {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 200px; height: 200px;
+    margin: -100px 0 0 -100px;
+    border-radius: 50%;
+    overflow: hidden;
+    animation: spinSlow 6s linear infinite;
+  }
+  .scan-line {
+    position: absolute;
+    top: 0; left: 50%;
+    width: 2px; height: 50%;
+    transform-origin: bottom center;
+    background: linear-gradient(to top, rgba(231,160,33,0.7), transparent);
+    filter: blur(1px);
+  }
+  .scan-glow {
+    position: absolute;
+    top: 0; left: 50%;
+    width: 100px; height: 100px;
+    margin-left: -100px;
+    background: conic-gradient(
+      from -30deg,
+      transparent 0deg,
+      rgba(231,160,33,0.12) 60deg,
+      transparent 90deg
+    );
+    transform-origin: right bottom;
+  }
+
+  /* ═══════════════════════════
+     CENTER HEX
+  ═══════════════════════════ */
+  .center-hex {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 80px; height: 80px;
+    margin: -40px 0 0 -40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hex-bg {
+    position: absolute;
+    inset: 0;
+    background: var(--gold);
+    clip-path: polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    animation: hexPulse 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 16px rgba(231,160,33,0.6));
+  }
+  .hex-bg-inner {
+    position: absolute;
+    inset: 8px;
+    background: #1a1a1a;
+    clip-path: polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  }
+  @keyframes hexPulse {
+    0%,100% { filter: drop-shadow(0 0 12px rgba(231,160,33,0.5)); }
+    50%      { filter: drop-shadow(0 0 28px rgba(231,160,33,0.9)); }
+  }
+
+  /* wrench SVG icon in center */
+  .hex-icon {
+    position: relative;
+    z-index: 2;
+    font-size: 28px;
+    line-height: 1;
+    animation: iconRock 3s ease-in-out infinite;
+  }
+  @keyframes iconRock {
+    0%,100% { transform: rotate(-8deg); }
+    50%      { transform: rotate(8deg);  }
+  }
+
+  /* ═══════════════════════════
+     ORBITING NODES
+  ═══════════════════════════ */
+
+  /* A node = invisible pivot at center, arm extends outward, icon at tip */
+  .node {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 0; height: 0;
+    transform-origin: 0 0;
+  }
+
+  .node-dot {
+    position: absolute;
+    border-radius: 50%;
+    background: var(--mid);
+    border: 2px solid rgba(231,160,33,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 14px rgba(231,160,33,0.25);
+    /* counter-rotate so icon stays upright */
+  }
+
+  .node-dot::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 1px solid rgba(231,160,33,0.15);
+  }
+
+  /* connector line from center to node */
+  .node-line {
+    position: absolute;
+    top: 0; left: 0;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(231,160,33,0.4), rgba(231,160,33,0.05));
+    transform-origin: left center;
+  }
+
+  /* ── NODE 1 — llave inglesa — r=130, 7s CW ── */
+  .n1 { animation: orb 7s linear infinite; }
+  .n1 .node-dot {
+    width: 46px; height: 46px;
+    top: -23px; left: 130px;
+    font-size: 22px;
+    animation: counter 7s linear infinite;
+  }
+  .n1 .node-line { width: 130px; }
+
+  /* ── NODE 2 — martillo — r=110, 11s CCW ── */
+  .n2 { animation: orb 11s linear infinite reverse; animation-delay: -4s; }
+  .n2 .node-dot {
+    width: 42px; height: 42px;
+    top: -21px; left: 110px;
+    font-size: 20px;
+    animation: counter 11s linear infinite; animation-delay: -4s;
+  }
+  .n2 .node-line { width: 110px; }
+
+  /* ── NODE 3 — engranaje — r=150, 9s CW ── */
+  .n3 { animation: orb 9s linear infinite; animation-delay: -2s; }
+  .n3 .node-dot {
+    width: 50px; height: 50px;
+    top: -25px; left: 150px;
+    font-size: 24px;
+    animation: counter 9s linear infinite; animation-delay: -2s;
+  }
+  .n3 .node-line { width: 150px; }
+
+  /* ── NODE 4 — destornillador — r=120, 6s CCW ── */
+  .n4 { animation: orb 6s linear infinite reverse; animation-delay: -1s; }
+  .n4 .node-dot {
+    width: 40px; height: 40px;
+    top: -20px; left: 120px;
+    font-size: 19px;
+    animation: counter 6s linear infinite; animation-delay: -1s;
+  }
+  .n4 .node-line { width: 120px; }
+
+  /* ── NODE 5 — tuerca — r=140, 14s CW ── */
+  .n5 { animation: orb 14s linear infinite; animation-delay: -6s; }
+  .n5 .node-dot {
+    width: 44px; height: 44px;
+    top: -22px; left: 140px;
+    font-size: 21px;
+    animation: counter 14s linear infinite; animation-delay: -6s;
+  }
+  .n5 .node-line { width: 140px; }
+
+  /* ── NODE 6 — cutter/sierra — r=100, 8s CCW ── */
+  .n6 { animation: orb 8s linear infinite reverse; animation-delay: -3s; }
+  .n6 .node-dot {
+    width: 38px; height: 38px;
+    top: -19px; left: 100px;
+    font-size: 18px;
+    animation: counter 8s linear infinite; animation-delay: -3s;
+  }
+  .n6 .node-line { width: 100px; }
+
+  @keyframes orb     { to { transform: rotate(360deg);  } }
+  @keyframes counter { to { transform: rotate(-360deg); } }
+
+
+
+  /* ═══════════════════════════
+     CORNER BRACKETS
+  ═══════════════════════════ */
+
+
+  /* ═══════════════════════════
+     FLOATING SPARKS
+  ═══════════════════════════ */
+  .sparks { position: absolute; top:50%; left:50%; pointer-events:none; }
+  .sp {
+    position: absolute;
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: var(--gold);
+    animation: spFloat 2.8s ease-out infinite;
+    opacity: 0;
+  }
+  .sp:nth-child(1)  { animation-delay:0.0s; --tx: 55px;  --ty:-75px;  }
+  .sp:nth-child(2)  { animation-delay:0.5s; --tx:-65px;  --ty:-55px;  }
+  .sp:nth-child(3)  { animation-delay:1.0s; --tx: 70px;  --ty: 40px;  }
+  .sp:nth-child(4)  { animation-delay:1.5s; --tx:-45px;  --ty: 80px;  }
+  .sp:nth-child(5)  { animation-delay:2.0s; --tx: 30px;  --ty:-90px;  }
+  .sp:nth-child(6)  { animation-delay:2.5s; --tx:-80px;  --ty:-30px;  }
+  .sp:nth-child(7)  { animation-delay:0.8s; --tx: 85px;  --ty: 20px;  }
+  .sp:nth-child(8)  { animation-delay:1.8s; --tx:-30px;  --ty: 90px;  }
+
+  @keyframes spFloat {
+    0%   { opacity:0; transform:translate(0,0) scale(1.5); }
+    8%   { opacity:1; }
+    100% { opacity:0; transform:translate(var(--tx),var(--ty)) scale(0); }
+  }
+
+  /* ═══════════════════════════
+     PULSE RINGS (outward)
+  ═══════════════════════════ */
+  .pulse-ring {
+    position: absolute;
+    top:50%; left:50%;
+    width: 80px; height: 80px;
+    margin:-40px 0 0 -40px;
+    border-radius: 50%;
+    border: 1px solid var(--gold);
+    opacity: 0;
+    animation: pulseOut 3s ease-out infinite;
+  }
+  .pulse-ring:nth-child(2) { animation-delay: 1s; }
+  .pulse-ring:nth-child(3) { animation-delay: 2s; }
+
+  @keyframes pulseOut {
+    0%   { transform: scale(1);   opacity: 0.6; }
+    100% { transform: scale(4.5); opacity: 0;   }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="stage">
+
+  <!-- bg -->
+  <div class="bg-glow"></div>
+  <div class="grid"></div>
+
+  <!-- corner brackets -->
+  <div class="bracket br-tl"></div>
+  <div class="bracket br-tr"></div>
+  <div class="bracket br-bl"></div>
+  <div class="bracket br-br"></div>
+
+
+
+  <!-- outer rings -->
+  <div class="ring-outer"></div>
+  <div class="ring-mid"></div>
+  <div class="ring-inner"></div>
+
+  <!-- scan -->
+  <div class="scan-wrap">
+    <div class="scan-line"></div>
+    <div class="scan-glow"></div>
+  </div>
+
+  <!-- pulse rings -->
+  <div class="pulse-ring"></div>
+  <div class="pulse-ring"></div>
+  <div class="pulse-ring"></div>
+
+  <!-- sparks -->
+  <div class="sparks">
+    <div class="sp"></div><div class="sp"></div><div class="sp"></div>
+    <div class="sp"></div><div class="sp"></div><div class="sp"></div>
+    <div class="sp"></div><div class="sp"></div>
+  </div>
+
+  <!-- orbiting nodes -->
+  <div class="node n1"><div class="node-line"></div><div class="node-dot">🔧</div></div>
+  <div class="node n2"><div class="node-line"></div><div class="node-dot">🔨</div></div>
+  <div class="node n3"><div class="node-line"></div><div class="node-dot">⚙️</div></div>
+  <div class="node n4"><div class="node-line"></div><div class="node-dot">🪛</div></div>
+  <div class="node n5"><div class="node-line"></div><div class="node-dot">🔩</div></div>
+  <div class="node n6"><div class="node-line"></div><div class="node-dot">🪚</div></div>
+
+  <!-- center hex -->
+  <div class="center-hex">
+    <div class="hex-bg"></div>
+    <div class="hex-bg-inner"></div>
+    <div class="hex-icon">⚒️</div>
+  </div>
+
+</div>
+
+</body>
+</html>
