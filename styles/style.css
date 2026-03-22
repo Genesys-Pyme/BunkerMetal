@@ -114,3 +114,8 @@ main {
 #servicios{
     min-height: 100vh;
 }
+
+#servicios img {
+  height: 250px;        /* altura fija para todas */
+  object-fit: cover;    /* recorta sin deformar */
+}
