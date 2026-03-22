@@ -38,6 +38,14 @@ main {
     color: #E7A021;
 }
 
+.bg-gris{
+    background-color: #1B1B1B;
+}
+
+.text-gris{
+    color: #717171;
+}
+
 #banner{
     min-height: 90vh;
 }
