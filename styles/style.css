@@ -47,8 +47,9 @@ main {
 }
 
 #banner{
-    min-height: 80vh;
+    min-height: 90vh;
 }
+
 
 .linea{
     border: solid 1px rgb(48, 48, 48);
@@ -110,6 +111,13 @@ main {
     animation-duration: 5s;
   }
 }
+
+@media (max-width: 768px) {
+    #banner {
+        min-height: 70vh;
+    }
+}
+
 
 #servicios{
     min-height: 100vh;
