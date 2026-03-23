@@ -127,3 +127,19 @@ main {
   height: 250px;        /* altura fija para todas */
   object-fit: cover;    /* recorta sin deformar */
 }
+
+#nosotros{
+    min-height: 100vh;
+}
+
+.centrado{
+    display: flex;
+    justify-content: center;
+}
+
+
+@media (max-width: 768px) {
+    .centrado {
+        justify-content: start;
+    }
+}
